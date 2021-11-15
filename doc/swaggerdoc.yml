@@ -1,0 +1,143 @@
+openapi: 3.0.1
+info:
+  title: Companies API
+  description: This api returns company information
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: sergekeyser@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about this api
+  url: https://github.com/sergekeyser/companies-api
+servers:
+- url: http://somehost.test/v2
+tags:
+- name: config
+  description: Company configuration
+paths:
+  /companies:
+    get:
+      tags:
+      - config
+      summary: Retrieve companies
+      operationId: get-companies
+      parameters:
+      - name: lastReported
+        in: query
+        description: Date time on which the numbers of the company were last published
+        schema:
+          type: string
+          format: date-time
+      - name: nextReported
+        in: query
+        description: Period in time on which the numbers of the company will be published
+        schema:
+          type: string
+      - name: estimatedTimeInDay
+        in: query
+        description: An estimate on when during the day the report would be presented,
+          if no estimate is available please select noEstimate
+        schema:
+          enum:
+          - preMarketOpen
+          - postMarketClose
+          - morning
+          - midDay
+          - afternoon
+          - noEstimate
+      - name: estimatedTimeInDay
+        in: query
+        schema: {}
+      responses:
+        200:
+          description: Successfully posted request to retrieve data, data returned
+            in body of response
+          content: {}
+        204:
+          description: In case no data matches the request, a 204 is returned
+          content: {}
+        400:
+          description: In case the request fields do not contain the correct datatypes
+          content: {}
+        500:
+          description: In case of an undocumented error
+          content: {}
+      security:
+      - companies_auth:
+        - read:reportingDate
+      - api_key: []
+  /companies/{companyId}/reportingDate:
+    patch:
+      tags:
+      - config
+      summary: Update reporting dates for a company
+      operationId: patch-companiesByCompanyIdReportingDate
+      parameters:
+      - name: companyId
+        in: path
+        description: The id of the company for which the reporting date is retrieved
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: 'Succesfully posted the data, '
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/reportingDate'
+        400:
+          description: Invalid status value
+          content: {}
+      security:
+      - companies_auth:
+        - write:reportingDate
+        - read:reportingDate
+components:
+  schemas:
+    reportingDate:
+      type: object
+      properties:
+        id:
+          type: string
+        lastReported:
+          type: string
+          description: The date time in UTC when the last report was published
+          format: date-time
+        nextReported:
+          type: string
+          enum:
+          - never
+          - approved
+          - delivered
+        estimatedTimeInDay:
+          description: An estimate on when during the day the report would be presented
+          schema:
+            $ref: '#/components/schemas/estimatedTimeInDay'
+    estimatedTimeInDay:
+      type: string
+      enum:
+      - preMarketOpen
+      - postMarketClose
+      - morning
+      - midDay
+      - afternoon
+      - noEstimate
+  securitySchemes:
+    companies_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://auth0.com/oauth/dialog
+          scopes:
+            write:reportingDate: ""
+            read:reportingDate: ""
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
