@@ -13,7 +13,7 @@ externalDocs:
   description: Find out more about this api
   url: https://github.com/sergekeyser/companies-api
 servers:
-- url: http://somehost.test/v2
+- url: http://interview.sergekeyser.com/v1/api
 tags:
 - name: config
   description: Company configuration
@@ -25,37 +25,92 @@ paths:
       summary: Retrieve companies
       operationId: get-companies
       parameters:
-      - name: lastReported
+
+      - name: lastReportedFrom
         in: query
-        description: Date time on which the numbers of the company were last published
+        description: Starting date (UTC) from when the report was published (defaults to 1900-01-01T00:00:00Z) 
         schema:
           type: string
           format: date-time
-      - name: nextReported
+        required: false
+        example: "2021-10-12T00:00:00Z"
+
+      - name: lastReportedTo
         in: query
-        description: Period in time on which the numbers of the company will be published
+        description: End date (UTC) from when the report was published (defaults to the date and time that the request was made)
+        required: false
         schema:
           type: string
+          format: date-time
+        example: "2021-11-12T00:00:00Z"
+
+      - name: nextReportedFrom
+        in: query
+        description: Starting period in time on which the numbers of the company will be published (defaults to the time and date that the request is made)
+        schema:
+          oneOf:
+             - $ref: "#/components/schemas/dateTime"
+             - $ref: "#/components/schemas/dateOnly"
+             - $ref: "#/components/schemas/yearMonth"
+             - $ref: "#/components/schemas/never"
+        required: false
+        example: "2021-10"
+
+      - name: nextReportedTo
+        in: query
+        description: End period in time on which the numbers of the company will be published (defaults to 2099-12-31T00:00:00)
+        schema:
+          oneOf:
+             - $ref: "#/components/schemas/dateTime"
+             - $ref: "#/components/schemas/dateOnly"
+             - $ref: "#/components/schemas/yearMonth"
+             - $ref: "#/components/schemas/never"
+        required: false
+        example: "2021-11-01T00:00:00Z"
+
       - name: estimatedTimeInDay
         in: query
         description: An estimate on when during the day the report would be presented,
           if no estimate is available please select noEstimate
         schema:
-          enum:
-          - preMarketOpen
-          - postMarketClose
-          - morning
-          - midDay
-          - afternoon
-          - noEstimate
-      - name: estimatedTimeInDay
+             $ref: '#/components/schemas/estimatedTimeInDay'
+        example: midDay
+      
+      - name: includeNotReported
         in: query
-        schema: {}
+        description: Include in the response the companies that have no lastReported date set (i.e. these companies have never reported their numbers)
+        schema:
+           type: boolean
+        required: false
+        example: false
+      
+      - name: page
+        in: query
+        description: The page to be returned, defaults to page 0
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        required: false
+        example: 0
+      
+      - name: resultsPerPage
+        in: query
+        description: The max number of results to be returned in this page, defaults to 10 and has a max of 1000 results (to keep the database performant enough)
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 10  
       responses:
         200:
           description: Successfully posted request to retrieve data, data returned
             in body of response
-          content: {}
+          content: 
+               application/json:
+                  schema:
+                    $ref: '#/components/schemas/pagedReportingDate'
         204:
           description: In case no data matches the request, a 204 is returned
           content: {}
@@ -82,15 +137,15 @@ paths:
         required: true
         schema:
           type: string
+        example: abcd1234
+      
       responses:
         200:
           description: 'Succesfully posted the data, '
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/reportingDate'
+                $ref: '#/components/schemas/reportingDate'
         400:
           description: Invalid status value
           content: {}
@@ -100,6 +155,7 @@ paths:
         - read:reportingDate
 components:
   schemas:
+    
     reportingDate:
       type: object
       properties:
@@ -116,18 +172,72 @@ components:
           - approved
           - delivered
         estimatedTimeInDay:
-          description: An estimate on when during the day the report would be presented
-          schema:
-            $ref: '#/components/schemas/estimatedTimeInDay'
-    estimatedTimeInDay:
+          $ref: '#/components/schemas/estimatedTimeInDay'
+    
+    pagedReportingDate:
+      type: object
+      properties:
+        data:
+         type: array
+         items: 
+           $ref: '#/components/schemas/reportingDate'
+        paging:
+           $ref: '#/components/schemas/pagingObject'
+    
+    estimatedTimeInDay:          
+      description: Estimation on when during the day the report is delivered
+      type: string
+      enum: 
+        - preMarketOpen
+        - postMarketClose
+        - morning
+        - midDay
+        - afternoon
+        - noEstimate
+        
+    pagingObject:
+       description: Object returned when paging, this facilitates easy paging for the consumer
+       type: object
+       properties:
+         previousPageLink:
+           description: Link to previous page will be null if page is 0
+           type: string
+           example: "http://myserver.com/v1/api/object?page=0&results=20"
+         nextPageLink:
+           description: Link to next page
+           type: string
+           example: "http://myserver.com/v1/api/object?page=2&results=20"
+         numberOfResults:
+           description: Total number of results returned in page
+           type: integer
+           example: 20
+         hasMore:
+           description: If there are more results in the next page
+           type: boolean
+           example: true
+         currentPage:
+           description: Number of the current page
+           type: integer
+           example: 1
+           
+    
+    dateOnly:
+      description: Just a date, like "2021-12-31"
+      type: string
+      format: 'date'
+    dateTime:
+      description: Date and time in UTC like "2021-12-31T22:45:45Z"
+      type: string
+      format: 'date-time'
+    yearMonth:
+      type: string
+      pattern: ([0-9]){4}\-(([0][1-9])|([1][0-2]))
+    never: 
       type: string
       enum:
-      - preMarketOpen
-      - postMarketClose
-      - morning
-      - midDay
-      - afternoon
-      - noEstimate
+       - 'never'
+      
+       
   securitySchemes:
     companies_auth:
       type: oauth2
