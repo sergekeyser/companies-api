@@ -105,13 +105,15 @@ paths:
                     $ref: '#/components/schemas/pagedReportingDate'
         204:
           description: In case no data matches the request, a 204 is returned
-          content: {}
         400:
           description: In case the request fields do not contain the correct datatypes
-          content: {}
+          content:
+             application/json:
+                 schema: 
+                    $ref: '#/components/schemas/inputValidationErrorObject'
         500:
           description: In case of an undocumented error
-          content: {}
+
       security:
       - companies_auth:
         - read:reportingDate
@@ -130,14 +132,19 @@ paths:
         schema:
           type: string
         example: abcd1234
-      
+      requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reportingDate'
       responses:
         200:
           description: 'Succesfully posted the data, '
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/reportingDate'
+                $ref: '#/components/schemas/genericResponseObject'
         400:
           description: Invalid status value
           content: {}
@@ -148,11 +155,14 @@ paths:
 components:
   schemas:
     
+#Date fields
+    
     reportingDate:
       type: object
       properties:
         id:
           type: string
+          example: "1234AB"
         lastReported:
           type: string
           description: The date time in UTC when the last report was published
@@ -161,7 +171,8 @@ components:
           $ref: '#/components/schemas/nextReported'
         estimatedTimeInDay:
           $ref: '#/components/schemas/estimatedTimeInDay'
-    
+      required:
+        - id
     pagedReportingDate:
       type: object
       properties:
@@ -182,7 +193,38 @@ components:
         - midDay
         - afternoon
         - noEstimate
-        
+    
+    nextReported:
+          oneOf:
+           - type: string
+             format: "date-time"
+           - type: string
+             format: "date"
+           - type: string
+             pattern: ([0-9]){4}\-(([0][1-9])|([1][0-2]))
+           - type: string
+             enum:
+                - "never"
+          example: "2021-12"
+    
+#Reusable generic objects    
+    genericResponseObject:
+       description: Object with a success response
+       type: object
+       properties:
+         success:
+            description: true if response was a success else false
+            type: boolean
+            example: false
+         errorMessage:
+            description: Short description of the encountered error, absent if success is true
+            type: string
+            example: Company code ?!"£" is not a valid company code
+         errorCode:
+            description: Code to describe the error, see documentation on github for error codes
+            type: string
+            example: "205-invalidCmpyCode"
+            
     pagingObject:
        description: Object returned when paging, this facilitates easy paging for the consumer
        type: object
@@ -208,18 +250,22 @@ components:
            type: integer
            example: 1
     
-    nextReported:
-          oneOf:
-           - type: string
-             format: "date-time"
-           - type: string
-             format: "date"
-           - type: string
-             pattern: ([0-9]){4}\-(([0][1-9])|([1][0-2]))
-           - type: string
-             enum:
-                - "never"
-        
+    inputValidationErrorObject:
+         description: Object returned when the input fails validation
+         type: array
+         items:
+          type: object
+          properties:
+            fieldName:
+               description: The name of the field that failed validation
+               type: string
+               example: estimateTimeInDay
+            error: 
+               description: An error message describing the error
+               type: string
+               example: Can only contain one of preMarketOpen , postMarketClose , morning , midDay , afternoon , noEstimate, value "midAfternoon" not valid
+    
+
        
   securitySchemes:
     companies_auth:
