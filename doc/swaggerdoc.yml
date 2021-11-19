@@ -46,25 +46,17 @@ paths:
 
       - name: nextReportedFrom
         in: query
-        description: Starting period in time on which the numbers of the company will be published (defaults to the time and date that the request is made)
+        description: Starting period in time on which the numbers of the company will be published (defaults to the time and date that the request is made), this can either be a date (like 2020-01-01) or a datetime (2020-12-31T23:59:59Z) or a year month (2021-12) or the word "never" in case the company is taken off the market
         schema:
-          oneOf:
-             - $ref: "#/components/schemas/dateTime"
-             - $ref: "#/components/schemas/dateOnly"
-             - $ref: "#/components/schemas/yearMonth"
-             - $ref: "#/components/schemas/never"
+            $ref: "#/components/schemas/nextReported"
         required: false
         example: "2021-10"
 
       - name: nextReportedTo
         in: query
-        description: End period in time on which the numbers of the company will be published (defaults to 2099-12-31T00:00:00)
+        description: End period in time on which the numbers of the company will be published (defaults to the time and date that the request is made), this can either be a date (like 2020-01-01) or a datetime (2020-12-31T23:59:59Z) or a year month (2021-12) or the word "never" in case the company is taken off the market
         schema:
-          oneOf:
-             - $ref: "#/components/schemas/dateTime"
-             - $ref: "#/components/schemas/dateOnly"
-             - $ref: "#/components/schemas/yearMonth"
-             - $ref: "#/components/schemas/never"
+           $ref: "#/components/schemas/nextReported"
         required: false
         example: "2021-11-01T00:00:00Z"
 
@@ -166,11 +158,7 @@ components:
           description: The date time in UTC when the last report was published
           format: date-time
         nextReported:
-          type: string
-          enum:
-          - never
-          - approved
-          - delivered
+          $ref: '#/components/schemas/nextReported'
         estimatedTimeInDay:
           $ref: '#/components/schemas/estimatedTimeInDay'
     
@@ -219,24 +207,19 @@ components:
            description: Number of the current page
            type: integer
            example: 1
-           
     
-    dateOnly:
-      description: Just a date, like "2021-12-31"
-      type: string
-      format: 'date'
-    dateTime:
-      description: Date and time in UTC like "2021-12-31T22:45:45Z"
-      type: string
-      format: 'date-time'
-    yearMonth:
-      type: string
-      pattern: ([0-9]){4}\-(([0][1-9])|([1][0-2]))
-    never: 
-      type: string
-      enum:
-       - 'never'
-      
+    nextReported:
+          oneOf:
+           - type: string
+             format: "date-time"
+           - type: string
+             format: "date"
+           - type: string
+             pattern: ([0-9]){4}\-(([0][1-9])|([1][0-2]))
+           - type: string
+             enum:
+                - "never"
+        
        
   securitySchemes:
     companies_auth:
