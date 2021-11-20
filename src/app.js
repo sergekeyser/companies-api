@@ -7,6 +7,7 @@ app.listen(3000, function() {
 })
 
 app.use('/companies/', companiesRouter )
+app.use(express.json())
 
 app.use(function (req, res, next) {
   res.setHeader('Content-Type', 'application/json');
