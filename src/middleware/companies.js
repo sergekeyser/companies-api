@@ -1,23 +1,23 @@
 const { query } = require('express-validator')
 const { validationResult } = require('express-validator');
-const genericValidationRules = require('../helpers/generic.validationrules')
+const genericValidation = require('../helpers/generic.validationrules')
 
 exports.validate = (method) => {
         switch (method) {
                 case ('get'): {
                   return [
-							query('lastReportedFrom', genericValidationRules.timeRFC933UTC.error)
+							query('lastReportedFrom', genericValidation.staticValidation.timeRFC933UTC.error)
 								.optional()
 								.isString()
-								.matches(genericValidationRules.timeRFC933UTC.regex),
-							query('lastReportedTo', genericValidationRules.timeRFC933UTC.error)
+								.matches(genericValidation.staticValidation.timeRFC933UTC.regex),
+							query('lastReportedTo', genericValidation.staticValidation.timeRFC933UTC.error)
 								.optional()
 								.isString()
-								.matches(genericValidationRules.timeRFC933UTC.regex),
-							query('page', genericValidationRules.page.error)
+								.matches(genericValidation.staticValidation.timeRFC933UTC.regex),
+							query('page', genericValidation.staticValidation.page.error)
 								.optional()
 								.isInt(),
-							query('resultsPerPage', genericValidationRules.resultsPerPage.error + "1000")
+							query('resultsPerPage', genericValidation.staticValidation.resultsPerPage.error + "1000")
 								.optional()
 								.isInt()	
 						]

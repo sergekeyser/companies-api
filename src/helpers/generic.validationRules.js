@@ -2,7 +2,13 @@ const timeRFC933UTCRegex = /^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[T
 const dateRegex = /^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/;
 const yearMonthRegex = /^([0-9]){4}\-(([0][1-9])|([1][0-2]))$/;
 
-module.exports = Object.freeze ({
+module.exports = 
+{
+	nextReporting,
+	staticValidation
+}
+
+staticValidation = Object.freeze ({
     timeRFC933UTC: 
 		{ 
 			regex: timeRFC933UTCRegex,
@@ -24,6 +30,19 @@ module.exports = Object.freeze ({
 		},
 	resultsPerPage:
 	    {
-			error: "should be integer"
+			error: "Should be integer, and less than: "
 		}
 })
+
+
+function nextReporting(value) {
+				switch(true){
+				    case staticValidation.timeRFC933UTC.regex.test(value):
+                    case staticValidation.date.regex.test(value):
+				    case staticValidation.yearMonth.regex.test(value):
+				    case value === 'never':		 
+				              return true	     
+				    default:
+				              return false}
+}
+
