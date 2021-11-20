@@ -9,10 +9,10 @@ exports.validate = (method) => {
 		  return [
                          body('companyId', 'Required field, currently missing from the request please add')
 			    .exists(),
-			 body('lastReported', 'Should be a valid RFC 933 formatted field in UTC time zone (no other time zones supported) like so: 2012-12-31T23:59:59Z')
+			 body('lastReported', genericValidationRules.timeRFC933UTC.error)
 			    .optional()
 			    .isString()
-			    .matches(genericValidationRules.timeRFC933UTCRegex), 
+			    .matches(genericValidationRules.timeRFC933UTC.regex), 
 			  body('estimatedTimeInDay', 'Should be one of: preMarketOpen, postMarketClose, morning, midDay, afternoon, noEstimate')
 			  .optional()
 			  .isIn([["preMarketOpen","postMarketClose","morning","midDay","afternoon","noEstimate"]]),
@@ -20,9 +20,9 @@ exports.validate = (method) => {
 			    .optional()
 			    .custom( value => {
                                  switch(true){
-				    case genericValidationRules.timeRFC933UTCRegex.test(value):
-                                    case genericValidationRules.dateRegex.test(value):
-				    case genericValidationRules.yearMonthRegex.test(value):
+				    case genericValidationRules.timeRFC933UTC.regex.test(value):
+                                    case genericValidationRules.date.regex.test(value):
+				    case genericValidationRules.yearMonth.regex.test(value):
 				    case value === 'never':		 
 				              return true	     
 				    default:
