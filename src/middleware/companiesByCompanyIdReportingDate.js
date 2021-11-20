@@ -1,10 +1,7 @@
 const { body } = require('express-validator')
 const { validationResult } = require('express-validator');
-//very long regex but matches time stamps like 2012-12-12T23:59:59Z
-const timeRFC933UTCRegex = /^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[Tt]([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\.[0-9]+)?([Zz])$/
-const dateRegex = /^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/
-const yearMonthRegex = /^([0-9]){4}\-(([0][1-9])|([1][0-2]))$/
-
+const genericValidationRules = require('../helpers/generic.validationrules')
+	
 exports.validate = (method) => {
         console.log('testing!')
 	switch (method) {
@@ -15,8 +12,7 @@ exports.validate = (method) => {
 			 body('lastReported', 'Should be a valid RFC 933 formatted field in UTC time zone (no other time zones supported) like so: 2012-12-31T23:59:59Z')
 			    .optional()
 			    .isString()
-			    //long regex but this is just matching an RFC 933 date format
-			    .matches(timeRFC933UTCRegex), 
+			    .matches(genericValidationRules.timeRFC933UTCRegex), 
 			  body('estimatedTimeInDay', 'Should be one of: preMarketOpen, postMarketClose, morning, midDay, afternoon, noEstimate')
 			  .optional()
 			  .isIn([["preMarketOpen","postMarketClose","morning","midDay","afternoon","noEstimate"]]),
@@ -24,10 +20,10 @@ exports.validate = (method) => {
 			    .optional()
 			    .custom( value => {
                                  switch(true){
-				    case timeRFC933UTCRegex.test(value):
-                                    case dateRegex.test(value):
-				    case yearMonthRegex.test(value):
-				    case 'never':		 
+				    case genericValidationRules.timeRFC933UTCRegex.test(value):
+                                    case genericValidationRules.dateRegex.test(value):
+				    case genericValidationRules.yearMonthRegex.test(value):
+				    case value === 'never':		 
 				              return true	     
 				    default:
 				              return false}
