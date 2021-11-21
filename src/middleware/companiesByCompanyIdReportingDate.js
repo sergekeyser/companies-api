@@ -60,7 +60,7 @@ exports.createDate = async (req,res,next) => {
 	mongo.getDb().collection('companies').updateOne(query,update,options)
     .then(result => {
       console.log(result)
-	  res.status(200).json({ message: "success"});
+	  res.status(200).json({ success: true});
     })  
 		
 	 } catch (err) {
