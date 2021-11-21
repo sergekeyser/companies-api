@@ -3,12 +3,19 @@ const express = require('express');
 const mongo = require('./helpers/mongodb.driver.js')
 const app = express();
 const companiesRouter = require('./routes/companies.routes');
+const path = require('path')
+
 const version = process.env.mongo_dbCompanies_version
+const apiPort = process.env.api_port
 
 mongo.connectDb();
 app.listen(3000, function() {
   console.log('listening on 3000')
 })
+
+app.get(version + '/swagger', (req, res) => {
+		console.log('swag')
+		res.sendFile(__dirname + '/swaggerdoc.yml')})
 
 app.use( version + '/companies/', companiesRouter )
 app.use(express.json())
