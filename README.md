@@ -3,12 +3,12 @@
 This api allows to retrieve company information.
 
 # House keeping
-##How to run:
+## How to run:
 Just the nodejs app in dev mode locally: 
 - npm install
 - npm run dev
 
-##Api documentation
+## Api documentation
 The swagger source file can be found here:
 The swagger ui can be found here:
 
