@@ -1,7 +1,10 @@
+require('dotenv').config({ path: 'dev.env' });
 const express = require('express');
+const mongo = require('./helpers/mongodb.driver.js')
 const app = express();
 var companiesRouter = require('./routes/companies.routes');
 
+mongo.connectDb();
 app.listen(3000, function() {
   console.log('listening on 3000')
 })
@@ -23,3 +26,4 @@ app.use(function (err, req, res, next) {
           "message": "Oopsie something went wrong, feel free to raise a bug on https://github.com/sergekeyser/companies-api "
   }))
 })
+
