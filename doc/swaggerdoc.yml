@@ -44,7 +44,7 @@ paths:
           format: date-time
         example: "2021-11-12T00:00:00Z"
 
-      - name: nextReportedFrom
+      - name: nextReportingFrom
         in: query
         description: Starting period in time on which the numbers of the company will be published (defaults to the time and date that the request is made), this can either be a date (like 2020-01-01) or a datetime (2020-12-31T23:59:59Z) or a year month (2021-12) or the word "never" in case the company is taken off the market
         schema:
@@ -52,7 +52,7 @@ paths:
         required: false
         example: "2021-10"
 
-      - name: nextReportedTo
+      - name: nextReportingTo
         in: query
         description: End period in time on which the numbers of the company will be published (defaults to the time and date that the request is made), this can either be a date (like 2020-01-01) or a datetime (2020-12-31T23:59:59Z) or a year month (2021-12) or the word "never" in case the company is taken off the market
         schema:

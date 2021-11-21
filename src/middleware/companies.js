@@ -1,6 +1,7 @@
 const { query } = require('express-validator')
 const { validationResult } = require('express-validator');
 const genericValidation = require('../helpers/generic.validationrules')
+const companiesValidation = require('../helpers/companies.validationRules')
 
 exports.validate = (method) => {
         switch (method) {
@@ -14,6 +15,20 @@ exports.validate = (method) => {
 								.optional()
 								.isString()
 								.matches(genericValidation.staticValidation.timeRFC933UTC.regex),
+							query('nextReportingFrom', companiesValidation.staticValidation.nextReporting.error)
+							    .optional()
+								.isString()
+								.custom(companiesValidation.nextReporting),
+							query('nextReportingTo', companiesValidation.staticValidation.nextReporting.error)
+							    .optional()
+								.isString()
+								.custom(companiesValidation.nextReporting),
+							query('estimatedTimeInDay',companiesValidation.staticValidation.estimatedTimeInDay.error)
+			                    .optional()
+			                    .isIn(companiesValidation.staticValidation.estimatedTimeInDay.options),
+							query('includeNotReported', "Field can only be boolean, please use either true/false")
+							    .optional()
+								.isBoolean(),
 							query('page', genericValidation.staticValidation.page.error)
 								.optional()
 								.isInt(),

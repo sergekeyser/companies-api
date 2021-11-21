@@ -16,6 +16,6 @@ router.get('/',
 router.post('/:companyId/reportingDate',
 	      jsonParser,
               companiesByCompanyIdReportingDate.validate('post'),
-	      companiesByCompanyIdReportingDate.createDate
+	          companiesByCompanyIdReportingDate.createDate
             );
 module.exports = router

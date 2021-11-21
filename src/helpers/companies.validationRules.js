@@ -9,6 +9,10 @@ staticValidation = Object.freeze ({
 		{
 			error: 'Should be one of: preMarketOpen, postMarketClose, morning, midDay, afternoon, noEstimate',
 			options: ["preMarketOpen","postMarketClose","morning","midDay","afternoon","noEstimate"]
+		},
+	companyId:
+		{
+			length: { min: 1, max:15}
 		}
 		
 		

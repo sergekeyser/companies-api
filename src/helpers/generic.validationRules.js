@@ -2,7 +2,7 @@ const timeRFC933UTCRegex = /^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[T
 const dateRegex = /^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/;
 const yearMonthRegex = /^([0-9]){4}\-(([0][1-9])|([1][0-2]))$/;
 
-
+	
 
 staticValidation = Object.freeze ({
     timeRFC933UTC: 
