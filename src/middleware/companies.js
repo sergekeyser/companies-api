@@ -56,7 +56,7 @@ exports.retrieveDate = async (req,res,next) => {
              res.status(400).json({ errors: errors.array() });
              return;
         }
-      query = {companyId: req.query.companyId} 
+   query = {companyId: req.query.companyId} 
  	  
    completeData = fillData(req.query);
    offset = completeData.page * completeData.resultsPerPage
@@ -67,16 +67,15 @@ exports.retrieveDate = async (req,res,next) => {
    console.log(completeData)
    console.log(query)
 	  
-    mongo.getDb().collection('companies')
+   mongo.getDb().collection('companies')
 	  .find(query)
 	  .sort('companyId')
 	  .skip(offset)
 	  .limit(limit)
 	  .toArray(function(err, result) {
 		 if (err) res.status(500).json({ });
-		 if(result.length == 0)
-		     res.status(204)	 
-		 res.status(200).json(constructResponse(err,result,completeData));
+         if(result.length == 0) res.status(204).json({})
+		 if((result.length != 0) && !err) res.status(200).json(constructResponse(err,result,completeData));
 		 }); 
   } catch (err) {
       return next(err)
@@ -86,6 +85,8 @@ exports.retrieveDate = async (req,res,next) => {
 function constructResponse(err,result,completeData)
 	{
 		const serverurl = process.env.mongo_dbCompanies_baseURL
+		var hasMore = false
+		
 		
 		var remappedMessage = result.map( item => {
 							const container = {}
@@ -95,13 +96,15 @@ function constructResponse(err,result,completeData)
 							container.estimatedTimeInDay = item.estimatedTimeInDay
 							return container
 						});
-						
+		
+		if (completeData.resultsPerPage == remappedMessage.length) hasMore = true 
+				
 		var paging = {
 			    //ToDo update the serverurl to include the correct query parameters
 			    previousPageLink: serverurl ,
 				nextPageLink: serverurl ,
 				numberOfResults: remappedMessage.length ,
-				hasMore: true,
+				hasMore: hasMore ,
 				currentPage: completeData.page
 		}
 

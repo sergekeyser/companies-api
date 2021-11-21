@@ -2,14 +2,15 @@ require('dotenv').config({ path: 'dev.env' });
 const express = require('express');
 const mongo = require('./helpers/mongodb.driver.js')
 const app = express();
-var companiesRouter = require('./routes/companies.routes');
+const companiesRouter = require('./routes/companies.routes');
+const version = process.env.mongo_dbCompanies_version
 
 mongo.connectDb();
 app.listen(3000, function() {
   console.log('listening on 3000')
 })
 
-app.use('/v1/api/companies/', companiesRouter )
+app.use( version + '/companies/', companiesRouter )
 app.use(express.json())
 
 app.use(function (req, res, next) {
