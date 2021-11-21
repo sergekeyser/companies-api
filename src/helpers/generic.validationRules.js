@@ -31,19 +31,8 @@ staticValidation = Object.freeze ({
 })
 
 
-function nextReporting(value) {
-				switch(true){
-				    case staticValidation.timeRFC933UTC.regex.test(value):
-                    case staticValidation.date.regex.test(value):
-				    case staticValidation.yearMonth.regex.test(value):
-				    case value === 'never':		 
-				              return true	     
-				    default:
-				              return false}
-}
 
 module.exports = 
 {
-	nextReporting,
 	staticValidation
 }

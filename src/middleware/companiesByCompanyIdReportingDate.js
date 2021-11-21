@@ -1,26 +1,25 @@
 const { body } = require('express-validator')
 const { validationResult } = require('express-validator');
 const genericValidation = require('../helpers/generic.validationrules')
-
+const companiesValidation = require('../helpers/companies.validationRules')
 	
 exports.validate = (method) => {
         console.log('testing!')
 	switch (method) {
 		case ('post'): {
 		  return [
-                         body('companyId', 'Required field, currently missing from the request please add')
+              body('companyId', 'Required field, currently missing from the request please add')
 			    .exists(),
-			 body('lastReported', genericValidation.staticValidation.timeRFC933UTC.error)
+			  body('lastReported', genericValidation.staticValidation.timeRFC933UTC.error)
 			    .optional()
 			    .isString()
 			    .matches(genericValidation.staticValidation.timeRFC933UTC.regex), 
-			  body('estimatedTimeInDay', 'Should be one of: preMarketOpen, postMarketClose, morning, midDay, afternoon, noEstimate')
-			  .optional()
-			  .isIn([["preMarketOpen","postMarketClose","morning","midDay","afternoon","noEstimate"]]),
-			  body('nextReporting', 'Should be one of: date-time in UTC (like: 2021-12-31T23:59:59Z) or date (like 2021-12-31 or year month (like 2021-12) or the word \'never\' in case there will be no next reporting')
+			  body('estimatedTimeInDay', companiesValidation.staticValidation.estimatedTimeInDay.error)
 			    .optional()
-			    .custom(genericValidation.nextReporting)
-			    
+			    .isIn([companiesValidation.staticValidation.estimatedTimeInDay.options]),
+			  body('nextReporting', companiesValidation.staticValidation.nextReporting.error)
+			    .optional()
+			    .custom(companiesValidation.nextReporting)
 		  ]
 		}
 	}
