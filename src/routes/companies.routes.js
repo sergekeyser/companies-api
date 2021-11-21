@@ -10,10 +10,10 @@ var jsonParser = bodyParser.json()
 
 router.get('/',
 	   companies.validate('get'),
-	   companies.createDate
+	   companies.retrieveDate
          );
 	    
-router.post('/:companyId/reportingDate',
+router.patch('/:companyId/reportingDate',
 	      jsonParser,
               companiesByCompanyIdReportingDate.validate('post'),
 	          companiesByCompanyIdReportingDate.createDate

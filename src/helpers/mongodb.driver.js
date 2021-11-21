@@ -29,7 +29,6 @@ function connectDb() {
 };
 
 function getDb() {
-	console.log(_db + " in database")
     return _db;
   };
 

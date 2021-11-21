@@ -8,7 +8,8 @@ exports.validate = (method) => {
  	switch (method) {
 		case ('post'): {
 		  return [
-		      param('companyId', companiesValidation.staticValidation.companyId.error).isLength(companiesValidation.staticValidation.companyId.length),
+		      param('companyId', companiesValidation.staticValidation.companyId.error)
+				.isLength(companiesValidation.staticValidation.companyId.length),
               body('companyId', 'companyId should not be present in body, instead please only specify in uri parameters')
 				.not()
 				.exists(), 
@@ -28,20 +29,28 @@ exports.validate = (method) => {
 }
 
 exports.createDate = async (req,res,next) => {
-    try{
-	
+    var notReported = false
+	var update = {}
+	const options = {upsert: true}
 	const errors = validationResult(req);
 	const query = {companyId: req.params.companyId} 
-	const update = {$set: 
+	
+	try{
+		
+	if(req.body.lastReported == null)
+	  notReported = true
+	
+	update = {$set: 
 							{	
 								companyId: req.params.companyId, 
-								lastReported: req.body.lastReported,
+								lastReported: new Date(req.body.lastReported),
 								nextReporting: req.body.nextReporting, 
-								estimatedTimeInDay: req.body.estimatedTimeInDay
+								estimatedTimeInDay: req.body.estimatedTimeInDay,
+								nextReportingQueryField: new Date(companiesValidation.nextReportingToDate(req.body.nextReporting,true)),
+								notReported: notReported
 							}
 					}
 	
-	const options = {upsert: true}
 	
 	if (!errors.isEmpty()) {
 	res.status(400).json({ errors: errors.array() });

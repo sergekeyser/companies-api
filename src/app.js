@@ -9,7 +9,7 @@ app.listen(3000, function() {
   console.log('listening on 3000')
 })
 
-app.use('/companies/', companiesRouter )
+app.use('/v1/api/companies/', companiesRouter )
 app.use(express.json())
 
 app.use(function (req, res, next) {
