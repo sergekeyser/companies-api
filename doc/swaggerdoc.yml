@@ -26,6 +26,14 @@ paths:
       operationId: get-companies
       parameters:
 
+      - name: companyId
+        in: query
+        description: Company id to query 
+        schema:
+          type: string
+        required: false
+        example: abcd1234
+
       - name: lastReportedFrom
         in: query
         description: Starting date (UTC) from when the report was published (defaults to 1900-01-01T00:00:00Z) 
