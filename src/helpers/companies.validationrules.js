@@ -1,4 +1,4 @@
-const genericValidation = require('./generic.validationRules')
+const genericValidation = require('./generic.validationrules')
 
 staticValidation = Object.freeze ({
     nextReporting: 

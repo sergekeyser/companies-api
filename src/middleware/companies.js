@@ -1,7 +1,7 @@
 const { query } = require('express-validator')
 const { validationResult } = require('express-validator');
 const genericValidation = require('../helpers/generic.validationrules')
-const companiesValidation = require('../helpers/companies.validationRules')
+const companiesValidation = require('../helpers/companies.validationrules')
 const mongo = require('../helpers/mongodb.driver')
 
 exports.validate = (method) => {
